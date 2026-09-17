@@ -8,6 +8,7 @@
   <!-- Khai báo chuẩn PWA -->
   <link rel="manifest" href="/Thuoc/manifest.json">
   <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Tính liều">
@@ -49,7 +50,7 @@
       padding: 20px;
     }
 
-    /* Thanh nút cài đặt PWA */
+    /* Banner cài đặt PWA hiển thị trên cả Chrome, Cromite và Cốc Cốc */
     .install-banner {
       display: none;
       align-items: center;
@@ -253,7 +254,7 @@
 <body>
 
 <div class="calc-container">
-  <!-- Nút cài đặt ứng dụng -->
+  <!-- Thanh cài đặt -->
   <div id="installBanner" class="install-banner">
     <span>📲 Cài đặt ứng dụng về máy:</span>
     <button type="button" id="btnInstall" class="btn-install-app">Cài Đặt</button>
@@ -448,12 +449,13 @@
   }
 </script>
 
-<!-- Script khởi tạo PWA -->
+<!-- Script xử lý PWA thông minh tương thích cả Cromite, Chrome và Cốc Cốc -->
 <script>
   let deferredPrompt = null;
   const installBanner = document.getElementById('installBanner');
   const btnInstall = document.getElementById('btnInstall');
 
+  // Đăng ký Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/Thuoc/sw.js', { scope: '/Thuoc/' })
@@ -462,36 +464,44 @@
     });
   }
 
-  // Lắng nghe sự kiện trình duyệt cho phép cài đặt
+  // Bắt sự kiện chuẩn PWA (Chrome, Cromite, Edge)
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     installBanner.style.display = 'flex';
   });
 
-  // Khi bấm nút Cài Đặt
-  btnInstall.addEventListener('click', async () => {
-    if (!deferredPrompt) {
-      alert('Nếu không thấy hộp thoại hiện lên, vui lòng bấm vào dấu 3 chấm (⋮) ở góc trên bên phải trình duyệt Chrome và chọn "Cài đặt ứng dụng".');
-      return;
+  // Đối với trình duyệt không hỗ trợ sự kiện tự động (Cốc Cốc, Brave, Opera, Firefox)
+  // Tự động hiển thị banner sau 1.5 giây nếu web chưa ở chế độ app (standalone)
+  setTimeout(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (!isStandalone) {
+      installBanner.style.display = 'flex';
     }
+  }, 1500);
 
-    try {
-      deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult.outcome === 'accepted') {
-        installBanner.style.display = 'none';
-        deferredPrompt = null;
+  // Xử lý sự kiện khi bấm nút Cài Đặt
+  btnInstall.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+          installBanner.style.display = 'none';
+          deferredPrompt = null;
+        }
+      } catch (err) {
+        console.error('Prompt error:', err);
       }
-    } catch (err) {
-      console.error('Lỗi khi kích hoạt cài đặt:', err);
+    } else {
+      // Thông báo hướng dẫn nếu dùng Cốc Cốc hoặc trình duyệt chặn prompt
+      alert('Để cài đặt trên trình duyệt này:\n1. Bấm vào Menu (biểu tượng ⋮ hoặc logo Cốc Cốc ở góc màn hình).\n2. Chọn "Thêm vào màn hình chính" (hoặc "Cài đặt ứng dụng").');
     }
   });
 
   window.addEventListener('appinstalled', () => {
     installBanner.style.display = 'none';
     deferredPrompt = null;
-    alert('Đã cài đặt ứng dụng vào màn hình chính thành công!');
   });
 </script>
 
