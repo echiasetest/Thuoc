@@ -1,5 +1,5 @@
 // Tăng phiên bản mỗi khi bạn sửa code (v6, v7, v8...)
-const CACHE_NAME = 'thuoc-pwa-v6';
+const CACHE_NAME = 'thuoc-pwa-v7';
 const STATIC_ASSETS = [
   '/Thuoc/',
   '/Thuoc/index.html',
