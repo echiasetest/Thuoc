@@ -491,6 +491,50 @@
     console.log('PWA đã được cài đặt thành công.');
   });
 </script>
+<script>
+  let deferredPrompt = null;
+  const installBanner = document.getElementById('installBanner');
+  const btnInstall = document.getElementById('btnInstall');
 
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('SW Registered:', reg.scope))
+        .catch(err => console.error('SW Error:', err));
+    });
+  }
+
+  // Bắt sự kiện có thể cài đặt
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBanner.style.display = 'flex';
+  });
+
+  btnInstall.addEventListener('click', async () => {
+    if (!deferredPrompt) {
+      alert('Nếu không hiện bảng cài đặt, vui lòng bấm vào dấu 3 chấm (⋮) ở góc trên bên phải trình duyệt Chrome và chọn "Cài đặt ứng dụng".');
+      return;
+    }
+
+    // Hiển thị hộp thoại cài đặt của Chrome Android
+    deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      installBanner.style.display = 'none';
+      deferredPrompt = null;
+    } else {
+      // Nếu người dùng lỡ bấm Hủy, giữ lại banner để bấm lại
+      alert('Bạn đã hủy cài đặt. Bấm lại nút Cài Đặt khi cần.');
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    installBanner.style.display = 'none';
+    deferredPrompt = null;
+    alert('Ứng dụng đã được thêm vào màn hình chính Android thành công!');
+  });
+</script>
 </body>
 </html>
