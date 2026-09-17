@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tính Thể Tích Pha & Chia Liều Cho Trẻ</title>
 
-  <!-- Khai báo chuẩn PWA cho Android & iOS -->
+  <!-- Khai báo chuẩn PWA -->
   <link rel="manifest" href="/Thuoc/manifest.json">
   <meta name="theme-color" content="#0284c7">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Tính liều">
-  <link rel="apple-touch-icon" href="/Thuoc/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/Thuoc/icon-192.png">
 
   <style>
     :root {
@@ -49,7 +49,7 @@
       padding: 20px;
     }
 
-    /* Khung nút cài đặt PWA */
+    /* Thanh nút cài đặt PWA */
     .install-banner {
       display: none;
       align-items: center;
@@ -253,7 +253,7 @@
 <body>
 
 <div class="calc-container">
-  <!-- Thanh nút cài đặt hiển thị khi PWA sẵn sàng -->
+  <!-- Nút cài đặt ứng dụng -->
   <div id="installBanner" class="install-banner">
     <span>📲 Cài đặt ứng dụng về máy:</span>
     <button type="button" id="btnInstall" class="btn-install-app">Cài Đặt</button>
@@ -448,13 +448,12 @@
   }
 </script>
 
-<!-- Script xử lý Service Worker và Cài đặt PWA trên Android/PC -->
+<!-- Script khởi tạo PWA -->
 <script>
   let deferredPrompt = null;
   const installBanner = document.getElementById('installBanner');
   const btnInstall = document.getElementById('btnInstall');
 
-  // Đăng ký Service Worker với scope chính xác của repo Thuoc
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/Thuoc/sw.js', { scope: '/Thuoc/' })
@@ -463,17 +462,17 @@
     });
   }
 
-  // Lắng nghe sự kiện kích hoạt cài đặt từ trình duyệt
+  // Lắng nghe sự kiện trình duyệt cho phép cài đặt
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     installBanner.style.display = 'flex';
   });
 
-  // Khi người dùng bấm nút Cài Đặt
+  // Khi bấm nút Cài Đặt
   btnInstall.addEventListener('click', async () => {
     if (!deferredPrompt) {
-      alert('Nếu không thấy hộp thoại hiện lên, vui lòng bấm vào dấu 3 chấm (⋮) ở góc trên bên phải trình duyệt Chrome và chọn "Cài đặt ứng dụng" (hoặc "Thêm vào màn hình chính").');
+      alert('Nếu không thấy hộp thoại hiện lên, vui lòng bấm vào dấu 3 chấm (⋮) ở góc trên bên phải trình duyệt Chrome và chọn "Cài đặt ứng dụng".');
       return;
     }
 
@@ -489,7 +488,6 @@
     }
   });
 
-  // Khi cài đặt thành công
   window.addEventListener('appinstalled', () => {
     installBanner.style.display = 'none';
     deferredPrompt = null;
