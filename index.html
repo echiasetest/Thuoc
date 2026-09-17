@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tính Thể Tích Pha & Chia Liều Cho Trẻ</title>
+  
+  <!-- Cấu hình PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Tính liều">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
   <style>
     :root {
       --primary: #0284c7;
@@ -38,6 +47,43 @@
       border-radius: 12px;
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
       padding: 24px;
+    }
+
+    /* Banner cài đặt PWA */
+    .install-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: #e0f2fe;
+      border: 1px solid #7dd3fc;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .install-banner span {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #0369a1;
+    }
+
+    .btn-install-app {
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-top: 0;
+      width: auto;
+    }
+
+    .btn-install-app:hover {
+      background: #0369a1;
     }
 
     h1 {
@@ -132,7 +178,7 @@
       width: auto;
     }
 
-    button {
+    .btn-calc {
       width: 100%;
       background: var(--primary);
       color: white;
@@ -146,7 +192,7 @@
       transition: background 0.2s;
     }
 
-    button:hover {
+    .btn-calc:hover {
       background: var(--primary-hover);
     }
 
@@ -205,12 +251,16 @@
       color: var(--alert-text);
     }
   </style>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2196F3">
 </head>
 <body>
 
 <div class="calc-container">
+  <!-- Banner nút cài đặt PWA chủ động -->
+  <div id="installBanner" class="install-banner">
+    <span>Cài đặt ứng dụng về máy:</span>
+    <button type="button" id="btnInstall" class="btn-install-app">Cài Đặt</button>
+  </div>
+
   <h1>Pha & Chia Liều Viên Nén Cho Trẻ</h1>
   <p class="subtitle">Tính liều theo ngày/lần và thể tích nước cần rút uống</p>
 
@@ -276,7 +326,7 @@
     </div>
   </div>
 
-  <button type="button" onclick="calculateDosage()">Tính Thể Tích Cần Uống</button>
+  <button type="button" class="btn-calc" onclick="calculateDosage()">Tính Thể Tích Cần Uống</button>
 
   <div id="resultPanel" class="result-panel">
     <div class="result-highlight">
@@ -378,7 +428,6 @@
       return;
     }
 
-    // V_rút = (Liều 1 lần * Thể tích nước pha) / Hàm lượng 1 viên
     const volumePerDoseMl = (singleDoseMg * diluentVolume) / tabletStrength;
     const remainingMl = diluentVolume - volumePerDoseMl;
     const totalDailyMg = singleDoseMg * times;
@@ -401,12 +450,47 @@
   }
 </script>
 
+<!-- Script kích hoạt PWA & Nút cài đặt -->
 <script>
+  let deferredPrompt;
+  const installBanner = document.getElementById('installBanner');
+  const btnInstall = document.getElementById('btnInstall');
+
+  // Đăng ký Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js');
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('SW Registered:', reg.scope))
+        .catch(err => console.error('SW Failed:', err));
     });
   }
+
+  // Bắt sự kiện đủ điều kiện cài đặt
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Hiển thị banner cài đặt
+    installBanner.style.display = 'flex';
+  });
+
+  // Khi bấm nút Cài Đặt
+  btnInstall.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        installBanner.style.display = 'none';
+      }
+      deferredPrompt = null;
+    }
+  });
+
+  // Khi cài đặt xong, ẩn banner
+  window.addEventListener('appinstalled', () => {
+    installBanner.style.display = 'none';
+    console.log('PWA đã được cài đặt thành công.');
+  });
 </script>
+
 </body>
 </html>
