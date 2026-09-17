@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tính Thể Tích Pha & Chia Liều Cho Trẻ</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --alert-bg: #fffbeb;
+      --alert-border: #fef3c7;
+      --alert-text: #b45309;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f1f5f9;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .calc-container {
+      background: var(--bg-card);
+      max-width: 520px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      padding: 24px;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      color: #0f172a;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin: 16px 0 10px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      outline: none;
+      background-color: #fff;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .unit {
+      position: absolute;
+      right: 12px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 16px;
+      margin-top: 6px;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .radio-label input {
+      width: auto;
+    }
+
+    button {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    .result-panel {
+      margin-top: 20px;
+      background: #f0f9ff;
+      border: 1.5px solid #bae6fd;
+      border-radius: 10px;
+      padding: 16px;
+      display: none;
+    }
+
+    .result-highlight {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 8px 0;
+      border-bottom: 1px dashed #7dd3fc;
+    }
+
+    .result-highlight:last-child {
+      border-bottom: none;
+    }
+
+    .result-label {
+      font-size: 0.9rem;
+      color: #0369a1;
+      font-weight: 500;
+    }
+
+    .result-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0c4a6e;
+    }
+
+    .instructions {
+      margin-top: 14px;
+      background: white;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+    }
+
+    .warning-box {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--alert-bg);
+      border-left: 4px solid var(--alert-text);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      line-height: 1.45;
+      color: var(--alert-text);
+    }
+  </style>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2196F3">
+</head>
+<body>
+
+<div class="calc-container">
+  <h1>Pha & Chia Liều Viên Nén Cho Trẻ</h1>
+  <p class="subtitle">Tính liều theo ngày/lần và thể tích nước cần rút uống</p>
+
+  <div class="section-title">1. Thông tin viên thuốc sẵn có</div>
+  <div class="form-group">
+    <label for="tabletStrength">Hàm lượng 1 viên:</label>
+    <div class="input-wrap">
+      <input type="number" id="tabletStrength" placeholder="Ví dụ: 500, 250, 10..." step="any">
+      <span class="unit">mg</span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="diluentVolume">Thể tích nước dùng phân tán 1 viên:</label>
+    <div class="input-wrap">
+      <input type="number" id="diluentVolume" placeholder="Ví dụ: 10" value="10" step="any">
+      <span class="unit">ml</span>
+    </div>
+  </div>
+
+  <div class="section-title">2. Liều chỉ định & Số lần dùng</div>
+  <div class="grid-2">
+    <div class="form-group">
+      <label for="weight">Cân nặng trẻ (kg):</label>
+      <input type="number" id="weight" placeholder="Ví dụ: 12" step="0.1">
+    </div>
+    <div class="form-group">
+      <label for="timesPerDay">Số lần uống / ngày:</label>
+      <select id="timesPerDay">
+        <option value="1">1 lần / ngày (24h)</option>
+        <option value="2" selected>2 lần / ngày (cách 12h)</option>
+        <option value="3">3 lần / ngày (cách 8h)</option>
+        <option value="4">4 lần / ngày (cách 6h)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Quy cách nhập liều:</label>
+    <div class="radio-group">
+      <label class="radio-label">
+        <input type="radio" name="doseType" value="perDay" checked> Liều cả ngày (mg/kg/ngày)
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="doseType" value="perDose"> Liều mỗi lần (mg/kg/lần)
+      </label>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label id="doseLabel" for="dosePerKg">Liều chỉ định (mg/kg/ngày):</label>
+    <div class="input-wrap">
+      <input type="number" id="dosePerKg" placeholder="Ví dụ: 30" step="any">
+      <span class="unit" id="unitLabel">mg/kg/ngày</span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="targetDosePerDose">Hoặc nhập thẳng liều 1 lần uống (mg):</label>
+    <div class="input-wrap">
+      <input type="number" id="targetDosePerDose" placeholder="Tự động tính nếu nhập các ô trên" step="any">
+      <span class="unit">mg/lần</span>
+    </div>
+  </div>
+
+  <button type="button" onclick="calculateDosage()">Tính Thể Tích Cần Uống</button>
+
+  <div id="resultPanel" class="result-panel">
+    <div class="result-highlight">
+      <span class="result-label">Tổng liều cả ngày:</span>
+      <span class="result-value" id="resTotalDailyMg">0 mg</span>
+    </div>
+    <div class="result-highlight">
+      <span class="result-label">Liều 1 lần uống:</span>
+      <span class="result-value" id="resPerDoseMg">0 mg</span>
+    </div>
+    <div class="result-highlight">
+      <span class="result-label">Thể tích rút xilanh mỗi lần:</span>
+      <span class="result-value" id="resVolumeMl" style="color: #0284c7; font-size: 1.35rem;">0 ml</span>
+    </div>
+    <div class="result-highlight">
+      <span class="result-label">Lượng dịch thừa bỏ đi (mỗi lần pha):</span>
+      <span class="result-value" id="resRemainingMl">0 ml</span>
+    </div>
+
+    <div class="instructions" id="guideText"></div>
+  </div>
+
+  <div class="warning-box">
+    <strong>Lưu ý thực hành:</strong>
+    <ul style="padding-left: 18px; margin-top: 4px;">
+      <li><strong>Mỗi lần uống nên pha viên mới:</strong> Thuốc pha vào nước không có chất bảo quản và dễ bị thủy phân hoặc vi sinh vật phát triển, không nên để dành dịch thừa dùng cho các lần sau.</li>
+      <li><strong>Không nghiền/bẻ:</strong> Viên giải phóng biến đổi (XR, ER, SR), viên bao tan ruột.</li>
+      <li>Khấy đều và rút xilanh ngay vì đây là hỗn dịch, thuốc sẽ nhanh chóng lắng xuống đáy.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  const weightInput = document.getElementById('weight');
+  const dosePerKgInput = document.getElementById('dosePerKg');
+  const timesSelect = document.getElementById('timesPerDay');
+  const targetDoseInput = document.getElementById('targetDosePerDose');
+  const doseRadios = document.querySelectorAll('input[name="doseType"]');
+  const doseLabel = document.getElementById('doseLabel');
+  const unitLabel = document.getElementById('unitLabel');
+
+  function updateLabels() {
+    const isPerDay = document.querySelector('input[name="doseType"]:checked').value === 'perDay';
+    doseLabel.textContent = isPerDay ? 'Liều chỉ định (mg/kg/ngày):' : 'Liều chỉ định (mg/kg/lần):';
+    unitLabel.textContent = isPerDay ? 'mg/kg/ngày' : 'mg/kg/lần';
+    syncDose();
+  }
+
+  function syncDose() {
+    const weight = parseFloat(weightInput.value);
+    const dosePerKg = parseFloat(dosePerKgInput.value);
+    const times = parseInt(timesSelect.value, 10);
+    const isPerDay = document.querySelector('input[name="doseType"]:checked').value === 'perDay';
+
+    if (!isNaN(weight) && !isNaN(dosePerKg) && weight > 0 && dosePerKg > 0) {
+      let singleDose = 0;
+      if (isPerDay) {
+        singleDose = (weight * dosePerKg) / times;
+      } else {
+        singleDose = weight * dosePerKg;
+      }
+      targetDoseInput.value = singleDose.toFixed(2).replace(/\.?0+$/, '');
+    }
+  }
+
+  doseRadios.forEach(radio => radio.addEventListener('change', updateLabels));
+  weightInput.addEventListener('input', syncDose);
+  dosePerKgInput.addEventListener('input', syncDose);
+  timesSelect.addEventListener('change', syncDose);
+
+  function calculateDosage() {
+    const tabletStrength = parseFloat(document.getElementById('tabletStrength').value);
+    const diluentVolume = parseFloat(document.getElementById('diluentVolume').value);
+    const singleDoseMg = parseFloat(targetDoseInput.value);
+    const times = parseInt(timesSelect.value, 10);
+
+    const resultPanel = document.getElementById('resultPanel');
+    const resTotalDailyMg = document.getElementById('resTotalDailyMg');
+    const resPerDoseMg = document.getElementById('resPerDoseMg');
+    const resVolumeMl = document.getElementById('resVolumeMl');
+    const resRemainingMl = document.getElementById('resRemainingMl');
+    const guideText = document.getElementById('guideText');
+
+    if (!tabletStrength || tabletStrength <= 0) {
+      alert('Vui lòng nhập hàm lượng viên thuốc (mg).');
+      return;
+    }
+    if (!diluentVolume || diluentVolume <= 0) {
+      alert('Vui lòng nhập thể tích nước dùng để pha (ml).');
+      return;
+    }
+    if (!singleDoseMg || singleDoseMg <= 0) {
+      alert('Vui lòng nhập liều thuốc cho trẻ.');
+      return;
+    }
+
+    if (singleDoseMg > tabletStrength) {
+      alert(`Liều 1 lần (${singleDoseMg} mg) lớn hơn hàm lượng 1 viên (${tabletStrength} mg). Trẻ cần dùng nhiều hơn 1 viên/lần, hãy kiểm tra lại!`);
+      return;
+    }
+
+    // V_rút = (Liều 1 lần * Thể tích nước pha) / Hàm lượng 1 viên
+    const volumePerDoseMl = (singleDoseMg * diluentVolume) / tabletStrength;
+    const remainingMl = diluentVolume - volumePerDoseMl;
+    const totalDailyMg = singleDoseMg * times;
+
+    resTotalDailyMg.textContent = totalDailyMg.toFixed(1).replace(/\.0$/, '') + ' mg';
+    resPerDoseMg.textContent = singleDoseMg.toFixed(2).replace(/\.?0+$/, '') + ' mg';
+    resVolumeMl.textContent = volumePerDoseMl.toFixed(2).replace(/\.?0+$/, '') + ' ml';
+    resRemainingMl.textContent = remainingMl.toFixed(2).replace(/\.?0+$/, '') + ' ml';
+
+    const intervalHours = 24 / times;
+
+    guideText.innerHTML = `
+      <strong>Hướng dẫn dùng thuốc (${times} lần/ngày, cách mỗi ~${intervalHours} giờ):</strong><br>
+      • Mỗi lần uống: Nghiền 01 viên (${tabletStrength} mg), phân tán đều vào <strong>${diluentVolume} ml</strong> nước lọc sạch.<br>
+      • Lắc/khuấy tan đều, dùng xilanh rút đúng <strong>${volumePerDoseMl.toFixed(2)} ml</strong> cho trẻ uống ngay.<br>
+      • Bỏ phần nước thuốc còn thừa (${remainingMl.toFixed(2)} ml). Đến cữ uống tiếp theo, lặp lại quy trình pha mới.
+    `;
+
+    resultPanel.style.display = 'block';
+  }
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+</script>
+</body>
+</html>
