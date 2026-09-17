@@ -2,7 +2,7 @@
   "id": "/Thuoc/",
   "name": "Tính liều",
   "short_name": "Tính liều",
-  "description": "Pha & Chia Liều Cho Trẻ",
+  "description": "Pha & Chia Liều Viên Nén Cho Trẻ",
   "start_url": "/Thuoc/index.html",
   "scope": "/Thuoc/",
   "display": "standalone",
