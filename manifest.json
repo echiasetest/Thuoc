@@ -1,12 +1,12 @@
 {
-  "id": "/",
+  "id": "index.html",
   "name": "Tính liều",
   "short_name": "Tính liều",
-  "description": "My Progressive Web App",
-  "start_url": "./index.html",
+  "description": "Pha & Chia Liều Cho Trẻ",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#2196F3",
+  "theme_color": "#0284c7",
   "orientation": "portrait",
   "scope": "./",
   "icons": [
@@ -20,7 +20,7 @@
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
