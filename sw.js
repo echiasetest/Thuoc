@@ -1,4 +1,4 @@
-const CACHE_NAME = 'thuoc-pwa-v4';
+const CACHE_NAME = 'thuoc-pwa-v5';
 const STATIC_ASSETS = [
   '/Thuoc/',
   '/Thuoc/index.html',
@@ -7,19 +7,21 @@ const STATIC_ASSETS = [
   '/Thuoc/icon-512.png'
 ];
 
+// Cài đặt và nạp tài nguyên tĩnh
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(
         STATIC_ASSETS.map((url) =>
-          cache.add(url).catch((err) => console.warn(`[SW] Skip: ${url}`, err))
+          cache.add(url).catch((err) => console.warn(`[SW] Bỏ qua file: ${url}`, err))
         )
       );
     })
   );
 });
 
+// Xóa sạch cache cũ để cập nhật icon và code mới
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -30,6 +32,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Fetch dữ liệu từ cache hoặc mạng
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith('http')) return;
