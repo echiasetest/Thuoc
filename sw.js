@@ -1,4 +1,5 @@
-const CACHE_NAME = 'thuoc-pwa-v5';
+// Tăng phiên bản mỗi khi bạn sửa code (v6, v7, v8...)
+const CACHE_NAME = 'thuoc-pwa-v6';
 const STATIC_ASSETS = [
   '/Thuoc/',
   '/Thuoc/index.html',
@@ -7,21 +8,20 @@ const STATIC_ASSETS = [
   '/Thuoc/icon-512.png'
 ];
 
-// Cài đặt và nạp tài nguyên tĩnh
+// 1. Cài đặt và nạp tài nguyên tĩnh
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(
         STATIC_ASSETS.map((url) =>
-          cache.add(url).catch((err) => console.warn(`[SW] Bỏ qua file: ${url}`, err))
+          cache.add(url).catch((err) => console.warn(`[SW] Skip: ${url}`, err))
         )
       );
     })
   );
 });
 
-// Xóa sạch cache cũ để cập nhật icon và code mới
+// 2. Kích hoạt và dọn dẹp các cache phiên bản cũ
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -32,7 +32,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch dữ liệu từ cache hoặc mạng
+// 3. Phục vụ dữ liệu cache/network
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith('http')) return;
@@ -58,4 +58,11 @@ self.addEventListener('fetch', (event) => {
         });
     })
   );
+});
+
+// 4. Lắng nghe lệnh cập nhật từ giao diện người dùng
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
 });
