@@ -1,4 +1,15 @@
-"icons": [
+{
+  "id": "/Thuoc/",
+  "name": "Tính liều",
+  "short_name": "Tính liều",
+  "description": "Pha & Chia Liều Cho Trẻ",
+  "start_url": "/Thuoc/index.html",
+  "scope": "/Thuoc/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0284c7",
+  "orientation": "portrait",
+  "icons": [
     {
       "src": "/Thuoc/icon-192.png",
       "sizes": "192x192",
@@ -12,3 +23,4 @@
       "purpose": "any maskable"
     }
   ]
+}
